@@ -11,6 +11,36 @@
 		.icon-thumbs-down { font-size: 60px; background-image: url("data:image/svg+xml,%3Csvg%0A%20%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%0A%20%20width%3D%2224%22%0A%20%20height%3D%2224%22%0A%20%20viewBox%3D%220%200%2024%2024%22%0A%20%20fill%3D%22none%22%0A%20%20stroke%3D%22white%22%0A%20%20stroke-width%3D%222%22%0A%20%20stroke-linecap%3D%22round%22%0A%20%20stroke-linejoin%3D%22round%22%0A%3E%0A%20%20%3Cpath%20d%3D%22M10%2015v4a3%203%200%200%200%203%203l4-9V2H5.72a2%202%200%200%200-2%201.7l-1.38%209a2%202%200%200%200%202%202.3zm7-13h2.67A2.31%202.31%200%200%201%2022%204v7a2.31%202.31%200%200%201-2.33%202H17%22%20%2F%3E%0A%3C%2Fsvg%3E"); }
 		.text-center { text-align: center !important; }
 	</style>
+	<script>
+		function upvote() {
+			fetch(document.URL + "data",
+				{method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({"1":1,"-1":0})
+				})
+				.then(function(response) {
+					if (response.ok) {
+						document.getElementById("up").checked = true;
+					} else {
+						document.getElementById("error").checked = true;
+					}
+				});
+		};
+		function downvote() {
+			fetch(document.URL + "data",
+				{method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({"1":0,"-1":1})
+				})
+				.then(function(response) {
+					if (response.ok) {
+						document.getElementById("down").checked = true;
+					} else {
+						document.getElementById("error").checked = true;
+					}
+				});
+		};
+	</script>
 </head>
 <body>
 	<div class="card fluid container text-center">
@@ -19,13 +49,13 @@
 		</h2>
 		<div class="row section">
 			<div class="col-sm">
-				<button class="tertiary">
+				<button class="tertiary" onclick="upvote();">
 					<span class="icon-thumbs-up"></span>
 					<br>Gostei
 				</button>
 			</div>
 			<div class="col-sm">
-				<button class="secondary">
+				<button class="secondary" onclick="downvote();">
 					<span class="icon-thumbs-down"></span>
 					<br>Não gostei
 				</button>
@@ -65,7 +95,7 @@
 	<input type="checkbox" id="error" class="modal">
 	<div role="dialog" aria-labelledby="dialog-title">
 		<div class="card warning">
-			<label for="modal-control" class="modal-close"></label>
+			<label for="error" class="modal-close"></label>
 			<h3 class="section text-center" id="dialog-title">
 				Erro!
 			</h3>
