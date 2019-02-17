@@ -2,20 +2,22 @@
 local json = require("json")
 local fname = "data.json"
 
-function send_ok()
-	mg.write("HTTP/1.0 200 OK\r\n")
-	mg.write("Content-Type: application/json\r\n")
-	mg.write("Cache-Control: no-cache\r\n")
-end
-
 function send_info()
 	mg.write("Date:" .. os.date("! %a, %d %b %Y %H:%M:%S GMT") .. "\r\n")
 	mg.write("Connection: close\r\n")
 	mg.write("\r\n")
 end
 
+function send_ok()
+	mg.write("HTTP/1.0 200 OK\r\n")
+	mg.write("Content-Type: application/json\r\n")
+	mg.write("Cache-Control: no-cache\r\n")
+	send_info()
+end
+
 function send_error()
 	mg.write("HTTP/1.0 500 Internal Server Error\r\n")
+	send_info()
 end
 
 function encode(data)
@@ -26,7 +28,6 @@ function encode(data)
 			return r
 		else
 			send_error()
-			send_info()
 			mg.write(r, "\r\n")
 		end
 	else return '{"1":0,"-1":0}' end
@@ -39,7 +40,6 @@ function decode(data)
 			return r
 		else
 			send_error()
-			send_info()
 			mg.write(r, "\r\n")
 		end
 	else return {["1"] = 0,["-1"] = 0} end
@@ -49,7 +49,6 @@ function send_json(data)
 	data = encode(data)
 	if data then
 		send_ok()
-		send_info()
 		mg.write(data)
 		mg.write("\r\n")
 	end
@@ -83,12 +82,10 @@ elseif mg.request_info.request_method == "POST" then
 				send_json(data)
 			else
 				send_error()
-				send_info()
 				mg.write(e, "\r\n")
 			end
 		else
 			send_error()
-			send_info()
 			mg.write(e, "\r\n")
 		end
 	end
